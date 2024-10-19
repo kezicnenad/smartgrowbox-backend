@@ -1,47 +1,25 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const dotenv = require('dotenv');
+const { connectToDb } = require('./config/db');
 
 const app = express();
-const PORT = 5000;
+
+dotenv.config();
+
+// Konektiranje na MongoDB
+connectToDb();
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-let dataStore = []; // Primjer skladišta podataka
+// // Import routes
+// const deviceRoutes = require('./routes/deviceRoutes');
+// app.use('/api/devices', deviceRoutes);
 
-// Početna ruta
-app.get('/', (req, res) => {
-    res.send('Hello from Node.js server!');
-});
-
-// GET metoda - vraća sve podatke
-app.get('/data', (req, res) => {
-    res.json(dataStore);
-});
-
-// POST metoda - prima podatke od ESP32
-app.post('/data', (req, res) => {
-    console.log('Data received:', req.body);
-    dataStore.push(req.body); // Pohrani podatke
-    res.json({ status: 'success', message: 'Data received' });
-});
-
-// DELETE metoda - briše podatke prema ID-u
-app.delete('/data/:id', (req, res) => {
-    const id = req.params.id;
-    const index = dataStore.findIndex(item => item.id === parseInt(id));
-
-    if (index !== -1) {
-        dataStore.splice(index, 1); // Obriši podatak
-        res.json({ status: 'success', message: `Data with ID ${id} deleted` });
-    } else {
-        res.status(404).json({ status: 'error', message: `Data with ID ${id} not found` });
-    }
-});
-
-// Pokreni server
+// Start server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
