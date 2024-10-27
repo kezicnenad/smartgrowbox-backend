@@ -1,25 +1,25 @@
+require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const { connectToDb } = require('./config/db');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
 
+// Pokretanje aplikacije
 const app = express();
 
-dotenv.config();
+// Konekcija na bazu podataka
+connectDB();
 
-// Konektiranje na MongoDB
-connectToDb();
-
-// Middleware
-app.use(cors());
+// Middleware za parsiranje JSON tijela
 app.use(express.json());
 
-// // Import routes
-// const deviceRoutes = require('./routes/deviceRoutes');
-// app.use('/api/devices', deviceRoutes);
+// Rute
+app.use('/api/auth', authRoutes);
+app.get('/', (req, res) => {
+  res.send('hello')
+});
 
-// Start server
+// Pokretanje servera
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server radi na portu ${PORT}`);
 });
